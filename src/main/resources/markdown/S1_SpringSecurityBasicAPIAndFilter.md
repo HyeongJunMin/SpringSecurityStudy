@@ -139,5 +139,9 @@ Using generated security password: 4add4fb7-0180-4223-8cde-a278183cb58c
         - 서버가 내린 csrf 토큰과 일치하지 않으면 요청실패
         - XSS공격과 혼용돼서 csrf토큰까지 탈취되면 의미없음
 
-*** 분명 Filter인데 chain.doFilter를 못찾은 경험이 있는데 상속클래스를 확인해보면 된다
+
+
+*** 분명 Filter인데 chain.doFilter를 못찾은 경험이 있다. 그럴 땐 상속클래스를 확인해보면 된다.
+
+
 *** 중간에 있는 eventPublisher는 어떻게 동작하나? 필터체인 중간에 끼게할 수 있나?
