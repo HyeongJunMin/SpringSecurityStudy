@@ -42,11 +42,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // URL 선언적 방식
     http
             .authorizeRequests()
-            .antMatchers("/login").permitAll()
             .antMatchers("/home/**").hasAnyRole("USER", "SYS", "ADMIN")
             .antMatchers("/user").hasRole("USER")
             .antMatchers("/admin/pay").hasRole("SYS")
             .antMatchers("/admin/**").hasAnyRole("SYS", "ADMIN")
+            .anyRequest().permitAll()
     ;
     // 인증 정책
     http
@@ -127,8 +127,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 }
 
-@Configuration
-@Order(1)
+//@Configuration
+//@Order(1)
 class MultiSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
@@ -141,8 +141,8 @@ class MultiSecurityConfig extends WebSecurityConfigurerAdapter {
   }
 }
 
-@Configuration
-@Order(2)
+//@Configuration
+//@Order(2)
 class MultiSecurityConfig2 extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {

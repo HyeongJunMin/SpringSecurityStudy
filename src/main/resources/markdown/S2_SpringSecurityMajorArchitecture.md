@@ -126,7 +126,54 @@
 
 ### 6. 인증 흐름 이해 AuthenticationFlow
 1. 인증 흐름
+   - UsernamePasswordAuthenticationFilter : 매니저로부터 받은 인증객체 SecurityContext에 저장 (AbstractAuthenticationProcessingFilter.successfulAuthentication)
    - AuthenticationManager : 인증의 전반적인 관리(위임, 토큰 객체 생성 등), 실제 인증 역할은 AuthenticationProvider에 위임
    - AuthenticationProvider : 실제 인증 처리, 유저 유효성 검증(패스워드 체크 등)
    - UserDetailsService : 유저 객체 조회, UserDetails타입으로 반환
    ![AuthenticationFlow](../images/s2_14.png)
+
+### 7. AuthenticationManager
+1. AuthenticationManager
+   - interface이며, 기본 구현체는 ProviderManager     
+   - 인증처리는 Provider에게 위임
+   - 선택하는 Provider는 인증 요청에 따라 다름(Form, RememberMe, Oauth)
+   - 인증 요청에 적합한 Provider가 없는 경우 parent 필드에 적합한 Provider가 있는지 탐색해서 사용
+   - 적합한지 아닌지는 Provider의 supports메서드 사용
+   - ![AuthenticationManager](../images/s2_15.png)
+2. 초기화 과정
+   - AuthenticationManagerBuilder에서 AuthenticationProvider를 추가함
+   - 여러 개를 만들어 authenticationProviders에 add
+   ![AuthenticationProviders](../images/s2_16.png)   
+3. 동작
+   - 초기화 과정에서 결정된 Provider에게 인증 위임
+   ![PrivoderManager](../images/s2_17.png)
+   - 적합 Provider인지 아닌지는 Provider의 supports메서드 사용해서 판단
+   - 인증 객체 인스턴스 타입에 따라 선택
+   ![IsSupportsProvider](../images/s2_18.png)
+   - 작업이 완료되면 AuthenticationManager를 호출한 Filter로 인증 객체를 리턴
+
+### 8. Authorization
+   - 인가 : 접근이 허가된 권한을 갖는 사용자인지 입증하는 절차
+   - ```
+     웹 계층 : URL요청에 따른 화면 단위의 보안(ex_ GET /user/id01)
+     서비스 계층 : 메서드 기능 단위의 보안 (ex_ public void getUserByUsername())
+     도메인 계층 : 객체 단위의 보안
+     ```
+   - FilterSecurityInterceptor
+      - 필터 체인 마지막에 위치한 필터
+      - ```
+        public class FilterSecurityInterceptor extends AbstractSecurityInterceptor implements Filter { ... }
+        ```
+      - 인증된 사용자의 요청에 대해 승인/거부 여부를 최종적으로 결정
+      - 권한 처리는 AccessDecisionManager에 위임
+      ![FilterSecurityInterceptor](../images/s2_19.png)
+      - FilterSecurityInterceptor에서 super클래스의 beforeInvocation호출
+      ![FilterSecurityInterceptor](../images/s2_20.png)
+      - beforeInvocation : 메타데이터 활용해서 인가처리(AbstractSecurityInterceptor)
+      ![AbstractSecurityInterceptor](../images/s2_21.png)
+      - attemptAuthorization : AffirmativeBased가 인가 결정
+      ![attemptAuthorization](../images/s2_22.png)
+
+
+
+
