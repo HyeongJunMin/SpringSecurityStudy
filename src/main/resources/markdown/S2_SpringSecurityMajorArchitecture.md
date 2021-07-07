@@ -174,6 +174,57 @@
       - attemptAuthorization : AffirmativeBased가 인가 결정
       ![attemptAuthorization](../images/s2_22.png)
 
+### 9. 인가결정 심의자
+1. AccessDecisionManager
+   - 사용자의 자원접근 허용여부를 최종 결정하는 주체
+   - 여러 개의 Voter를 가지며 Voter들은 접근허용, 거부, 보류에 해당하는 각각의 값을 리턴한다.
+   - 접근결정의 세 가지 유형
+      1. AffirmativeBased : 하나라도 접근 허가면 허가 
+      2. ConsensusBased : 다수표에의해 최종허가 판단. 동수일 경우 allowIfEqualGrantedDeniedDecisions옵션에 따름(default = 허가)
+      3. UnanimousBased : 만장일치여야만 승인
+2. AccessDecisionVoter
+   - 판단을 심사하는 주체
+   - 권한 부여의 판단 근거가 되는 자료
+      1. Authentication : 인증정보
+      2. FilterInvocation : 요청정보(antManager("/user"))
+      3. ConfigAttributes : 권한정보(hasRole("USER"))
+3. 구조
+   - FilterSecurityInterceptor가 AccessDecisionManager에 인가처리를 요청하면?
+   - AccessDecisionManager가 갖는 Voter들이 판단처리
+   - 승인이 거부되면 ExceptionTranslationFilter가 처리
+   ![accessDecisionManager](../images/s2_23.png)
+   - AccessDecisionVoter의 여러 구현체들
+   ![accessDecisionVoter](../images/s2_24.png)
 
-
-
+### 10. 정리
+![springSecurityOverallArchitecture](../images/s2_25.png)
+1. 초기화
+```
+1. SecurityConfig 선언
+2. 선언된 대로 HttpSecurity가 filter들을 생성
+3. WebSecurity가 HttpSecurity들의 filter목록을 받아 FilterChainProxy로 전달
+4. DelegatingFilterProxy가 초기화될 때 springSecurityFilterChain이라는 빈을 찾아서 요청을 위임하게됨
+5. springSecurityFilterChain빈은 FilterChainProxy
+```
+2. 인증 인가 과정 : 로그인 시도 - 성공
+> 1~4 로그인 요청
+> 5~12 자원접근 요청
+   1. SecurityContextPersistenceFilter
+      - SecurityContext가 있는지 확인
+      - 있으면 가져오고 없으면 만들어줌
+   2. LogoutFilter : 로그아웃 요청이 아니므로 패스
+   3. UsernamePasswordAuthenticationFilter
+      - 인증처리하고 SecurityContext에 인증객체 저장
+      - AuthenticationManager, AuthenticationProvider, UserDetailsService
+      - 인증에 성공하면 SessionManagementFilter에 선언된 기능을 사용해서 후속처리
+      - LoginSuccessHandler에 따라 동작하게됨
+   4. SecurityContextPersistenceFilter
+      - 이 전에 로그인한 정보를 가져옴
+   5. LogoutFilter : 로그아웃 요청이 아니므로 패스
+   6. UsernamePasswordAuthenticationFilter : 인증 요청이 아니므로 패스
+   7. ConcurrentSessionFilter : 동시세션제어가 아니므로 패스
+   8. RememverMeAuthenticationFilter : remember-me cookie 확인
+   9. AnonymousAuthenticationFilter : 인증사용자이므로 패스
+   10. SessionManagementFilter : 세션이 있고 세션에 인증객체도 있기 때문에 패스
+   11. ExceptionTranslationFilter : 인가예외 처리
+   12. FilterSecurityInterceptor : 인가처리를 하는 필터로 예외발생시킴
