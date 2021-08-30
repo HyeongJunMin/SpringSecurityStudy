@@ -3,6 +3,7 @@ package io.test.security.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.test.security.domain.vo.AccountDTO;
 import io.test.security.token.AjaxAuthenticationToken;
+import lombok.Setter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Setter
 public class AjaxLoginProcessingFilter extends AbstractAuthenticationProcessingFilter {
 
   private ObjectMapper objectMapper = new ObjectMapper();

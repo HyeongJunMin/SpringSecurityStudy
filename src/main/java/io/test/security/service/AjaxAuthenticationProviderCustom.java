@@ -1,11 +1,9 @@
 package io.test.security.service;
 
 import io.test.security.token.AjaxAuthenticationToken;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,7 +22,7 @@ public class AjaxAuthenticationProviderCustom implements AuthenticationProvider 
   @Override
   @Transactional
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-    String loginId = authentication.getName();
+    String loginId = (String) authentication.getPrincipal();
     String password = (String) authentication.getCredentials();
     AccountContext accountContext = (AccountContext) userDetailsService.loadUserByUsername(loginId);
     if (!passwordEncoder.matches(password, accountContext.getPassword())) {
@@ -37,4 +35,5 @@ public class AjaxAuthenticationProviderCustom implements AuthenticationProvider 
   public boolean supports(Class<?> aClass) {
     return aClass.equals(AjaxAuthenticationToken.class);
   }
+
 }

@@ -1,3 +1,4 @@
+### ajax login
 POST http://localhost:8080/api/login
 Content-Type: application/json
 X-Requested-With: XMLHttpRequest
@@ -6,3 +7,31 @@ X-Requested-With: XMLHttpRequest
   "username" : "user",
   "password" : "1111"
 }
+###
+
+### ajax login failure
+POST http://localhost:8080/api/login
+Content-Type: application/json
+X-Requested-With: XMLHttpRequest
+
+{
+  "username" : "user",
+  "password" : "111"
+}
+###
+
+### ajax manager login
+POST http://localhost:8080/api/login
+Content-Type: application/json
+X-Requested-With: XMLHttpRequest
+
+{
+  "username" : "manager",
+  "password" : "1111"
+}
+###
+
+### request to get message
+POST http://localhost:8080/api/messages
+Content-Type: application/json
+X-Requested-With: XMLHttpRequest
